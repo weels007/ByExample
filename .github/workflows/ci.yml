@@ -22,11 +22,20 @@ jobs:
       - name: Lint the Intelligent Contract
         run: genvm-lint check contracts/by_example.py
 
+      - name: Seed the direct runner cache
+        # gltest looks for a release asset called genvm-universal.tar.xz, which
+        # newer GenVM releases no longer publish under that name, so the same
+        # runner bundle is placed in its cache under the name it asks for.
+        run: |
+          mkdir -p "$HOME/.cache/gltest-direct"
+          curl -fsSL -o "$HOME/.cache/gltest-direct/genvm-universal-v0.3.0-rc7.tar.xz" \
+            "https://github.com/genlayerlabs/genvm/releases/download/v0.3.0-rc7/genvm-runners-all.tar.xz"
+          ls -l "$HOME/.cache/gltest-direct"
+
       - name: Direct tests
         env:
-          # Pin the GenVM release so the direct runner downloads the same
-          # bundle the linter just used instead of resolving "latest" over the
-          # GitHub API, which answers 404 for an older fallback tag.
+          # Pin the GenVM release so the runner reads the bundle seeded above
+          # instead of resolving "latest" over the GitHub API.
           GENVM_VERSION: "v0.3.0-rc7"
         run: pytest tests/direct -x -vv --tb=long
 
