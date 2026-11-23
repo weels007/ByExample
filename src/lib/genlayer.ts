@@ -12,7 +12,7 @@ import type { CaseExample, Spec, SpecResult, SpecSummary } from './types'
  * `[integration] registry 0x...`. While this stays empty the UI renders a
  * "not deployed yet" state instead of calling a random address.
  */
-export const REGISTRY_ADDRESS = '0xD13569BAc518384a01f8Bc619E005487e469f18B' as `0x${string}` | ''
+export const REGISTRY_ADDRESS = '0x4Ba4d2aa82043912BA51B0FA7C8F2c0a5bCdFdF4' as `0x${string}` | ''
 
 export const IS_REGISTRY_CONFIGURED = REGISTRY_ADDRESS.length === 42
 

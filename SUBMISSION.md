@@ -16,7 +16,7 @@ it against every example — private ones included — and only then is the rule
 **Live app:** the Vercel deployment of this repository (static Vite build, no env vars)
 
 **Contract:** `contracts/by_example.py` — deployed on Studionet at
-`0xD13569BAc518384a01f8Bc619E005487e469f18B` (deployed by the integration workflow, which prints
+`0x4Ba4d2aa82043912BA51B0FA7C8F2c0a5bCdFdF4` (deployed by the integration workflow, which prints
 the address again on every run as `[integration] registry 0x...`).
 
 ---

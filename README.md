@@ -16,11 +16,12 @@ Equivalence here is execution-based. The artifact is the rule, and the test is t
 ## Status
 
 - Contract: `contracts/by_example.py`, deployed on Studionet at
-  `0xD13569BAc518384a01f8Bc619E005487e469f18B`. The integration suite deploys a fresh registry and
-  exercises it on every run; the address printed last was the one hardcoded in
-  `REGISTRY_ADDRESS` (`src/lib/genlayer.ts`).
-- Integration: green on Studionet — deploy, create, read, outsider refusal and invalid-create
-  revert pass; the live LLM evaluation is skipped unless `BYEXAMPLE_LIVE_EVALUATION=1`.
+  `0x4Ba4d2aa82043912BA51B0FA7C8F2c0a5bCdFdF4`. That registry holds a spec whose rule a real LLM
+  evaluation accepted; the integration suite deploys a fresh one on every run, and the address
+  printed last is the one hardcoded in `REGISTRY_ADDRESS` (`src/lib/genlayer.ts`).
+- Integration: 4 of 4 green on Studionet — deploy, create, read, outsider refusal, invalid-create
+  revert, and a live evaluation that stores the accepted rule, replays it through `apply` and is
+  refused a second time.
 - Frontend: green — `npm run typecheck` and `npm run build` pass in CI.
 - Direct suite: `genvm-lint` passes and all 39 tests in `tests/direct` pass in CI. The runner looks
   for a GenVM release asset under a name recent releases no longer publish, so `ci.yml` seeds its
@@ -176,8 +177,9 @@ BYEXAMPLE_LIVE_EVALUATION=1 gltest --network studionet tests/integration -v
 The keystore loader accepts a Web3 keystore JSON, a base64-encoded keystore, or a raw private key.
 `KEYSTORE_2` / `KEYSTORE_PASSWORD_2` are optional; without them the "outsider" test uses a fresh
 random account. With no `KEYSTORE_1` at all the suite falls back to the account the network already
-configured for itself, so the workflow deploys a registry on Studionet without any secret — only
-the gated live evaluation needs `BYEXAMPLE_LIVE_EVALUATION=1` as a repository variable.
+configured for itself, so the workflow deploys a registry on Studionet without any secret. The
+workflow runs the live evaluation by default; set the repository variable
+`BYEXAMPLE_LIVE_EVALUATION` to `0` to skip it.
 
 ---
 
