@@ -1,0 +1,9 @@
+Integration request
+
+Editing this file triggers .github/workflows/integration.yml, which runs the
+Studionet suite against contracts/by_example.py and prints the deployed
+registry address as:
+
+    [integration] registry 0x...
+
+Paste that address into REGISTRY_ADDRESS in src/lib/genlayer.ts.

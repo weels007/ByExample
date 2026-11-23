@@ -1,0 +1,52 @@
+name: Integration (Studionet)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/integration-request"
+
+concurrency:
+  group: integration-studionet
+  cancel-in-progress: false
+
+jobs:
+  studionet:
+    name: Deploy and exercise the registry on Studionet
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run the Studionet suite
+        env:
+          KEYSTORE_1: ${{ secrets.KEYSTORE_1 }}
+          KEYSTORE_PASSWORD_1: ${{ secrets.KEYSTORE_PASSWORD_1 }}
+          KEYSTORE_2: ${{ secrets.KEYSTORE_2 }}
+          KEYSTORE_PASSWORD_2: ${{ secrets.KEYSTORE_PASSWORD_2 }}
+          BYEXAMPLE_LIVE_EVALUATION: ${{ vars.BYEXAMPLE_LIVE_EVALUATION }}
+        run: gltest --network studionet tests/integration -v
+
+      - name: Print the registry address
+        if: always()
+        run: |
+          if [ -f integration-registry.txt ]; then
+            ADDRESS="$(cat integration-registry.txt)"
+            echo "[integration] registry $ADDRESS"
+            {
+              echo "### ByExample registry"
+              echo ""
+              echo "\`$ADDRESS\`"
+              echo ""
+              echo "Paste it into REGISTRY_ADDRESS in src/lib/genlayer.ts."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "The suite did not write integration-registry.txt (the deploy did not finish)." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
