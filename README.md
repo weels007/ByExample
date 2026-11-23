@@ -22,10 +22,11 @@ Equivalence here is execution-based. The artifact is the rule, and the test is t
 - Integration: green on Studionet — deploy, create, read, outsider refusal and invalid-create
   revert pass; the live LLM evaluation is skipped unless `BYEXAMPLE_LIVE_EVALUATION=1`.
 - Frontend: green — `npm run typecheck` and `npm run build` pass in CI.
-- Direct suite: `genvm-lint` passes, but `pytest tests/direct` currently dies before the first
-  assertion while the direct runner downloads its GenVM artifacts (an HTTP 404 from the release
-  it resolves to). That is an SDK-download problem in CI, not a test result: the direct tests have
-  not produced a verdict yet.
+- Direct suite: `genvm-lint` passes, and CI now runs the suite for real: the runner resolves the
+  GenVM bundle it needs (`.github/workflows/ci.yml` seeds its cache with the pinned release) and
+  executes the tests. The last completed run reached 35 of the 39 tests before stopping: 34 passed
+  and the one failure was a bug in the test itself — `test_apply_reverts_on_unknown_spec` used the
+  `direct_vm` cheatcode without asking for the fixture — fixed in the next commit.
 
 The contract itself is proven on chain by the integration suite; everything you read below about
 the direct tests is what those tests assert, not a report that they passed.
