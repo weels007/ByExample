@@ -11,3 +11,5 @@ Paste that address into REGISTRY_ADDRESS in src/lib/genlayer.ts.
 
 Requested runs
 - keystore fallback: deploy without KEYSTORE_1 and print the registry address
+
+- contract base class reached through the genlayer module
