@@ -417,7 +417,7 @@ def test_apply_reverts_before_evaluation(direct_vm, direct_deploy, direct_bob):
         registry.apply(spec_id, "hello!")
 
 
-def test_apply_reverts_on_unknown_spec(direct_deploy):
+def test_apply_reverts_on_unknown_spec(direct_vm, direct_deploy):
     registry = deploy(direct_deploy)
     with direct_vm.expect_revert("spec not found"):
         registry.apply("spec-999999", "hello!")

@@ -37,7 +37,7 @@ jobs:
           # Pin the GenVM release so the runner reads the bundle seeded above
           # instead of resolving "latest" over the GitHub API.
           GENVM_VERSION: "v0.3.0-rc7"
-        run: pytest tests/direct -x -vv --tb=long
+        run: pytest tests/direct -v
 
   frontend:
     name: Frontend (typecheck + build)
