@@ -17,3 +17,5 @@ Requested runs
 - contract uses the gl namespace from the star import
 
 - live evaluation: run evaluate() against a real LLM and expect the second call to revert
+
+- live evaluation retry: examples that pin the rule down, failure detail in the log

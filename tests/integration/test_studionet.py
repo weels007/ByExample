@@ -14,10 +14,19 @@ import pytest
 from gltest.assertions import tx_execution_failed, tx_execution_succeeded
 
 TRAILING_BANGS = [
-    {"input": "Hello world!", "output": "Hello world", "public": True},
+    {"input": "Hello world!!", "output": "Hello world", "public": True},
     {"input": "Ship it!", "output": "Ship it", "public": True},
-    {"input": "Done!!", "output": "Done", "public": False},
+    {"input": "Done!!!", "output": "Done", "public": False},
 ]
+
+
+def describe_failure(receipt):
+    """Best effort: put a failed transaction's execution output in the log."""
+    try:
+        payload = json.dumps(receipt, default=str)
+    except Exception:
+        payload = str(receipt)
+    return payload[:2000]
 
 
 def cases_json(cases):
@@ -97,7 +106,7 @@ def test_live_evaluation_end_to_end(registry):
         wait_interval=5000,
         wait_retries=120,
     )
-    assert tx_execution_succeeded(receipt)
+    assert tx_execution_succeeded(receipt), describe_failure(receipt)
 
     result = json.loads(registry.get_result(args=[spec_id]).call())
     assert isinstance(result["pattern"], str) and len(result["pattern"]) > 0
@@ -117,4 +126,4 @@ def test_live_evaluation_end_to_end(registry):
         wait_interval=5000,
         wait_retries=60,
     )
-    assert tx_execution_failed(receipt)
+    assert tx_execution_failed(receipt), describe_failure(receipt)
