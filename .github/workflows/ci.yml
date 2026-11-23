@@ -23,6 +23,11 @@ jobs:
         run: genvm-lint check contracts/by_example.py
 
       - name: Direct tests
+        env:
+          # Pin the GenVM release so the direct runner downloads the same
+          # bundle the linter just used instead of resolving "latest" over the
+          # GitHub API, which answers 404 for an older fallback tag.
+          GENVM_VERSION: "v0.3.0-rc7"
         run: pytest tests/direct -x -vv --tb=long
 
   frontend:
