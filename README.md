@@ -174,7 +174,9 @@ BYEXAMPLE_LIVE_EVALUATION=1 gltest --network studionet tests/integration -v
 
 The keystore loader accepts a Web3 keystore JSON, a base64-encoded keystore, or a raw private key.
 `KEYSTORE_2` / `KEYSTORE_PASSWORD_2` are optional; without them the "outsider" test uses a fresh
-random account.
+random account. With no `KEYSTORE_1` at all the suite falls back to the account the network already
+configured for itself, so the workflow deploys a registry on Studionet without any secret — only
+the gated live evaluation needs `BYEXAMPLE_LIVE_EVALUATION=1` as a repository variable.
 
 ---
 

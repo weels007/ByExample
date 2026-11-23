@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 
 import pytest
-from gltest import create_accounts, get_contract_factory
+from gltest import create_accounts, get_contract_factory, get_default_account
 
 from keystore import load_account
 
@@ -18,7 +18,11 @@ ADDRESS_FILE = Path(__file__).resolve().parents[2] / "integration-registry.txt"
 
 @pytest.fixture(scope="session")
 def owner_account():
-    return load_account("KEYSTORE_1", "KEYSTORE_PASSWORD_1")
+    # A keystore secret wins; without one the suite uses the account the
+    # network already configured for itself (Studionet generates one).
+    if os.environ.get("KEYSTORE_1", "").strip() != "":
+        return load_account("KEYSTORE_1", "KEYSTORE_PASSWORD_1")
+    return get_default_account()
 
 
 @pytest.fixture(scope="session")
