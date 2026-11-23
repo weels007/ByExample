@@ -31,7 +31,10 @@ jobs:
           KEYSTORE_PASSWORD_1: ${{ secrets.KEYSTORE_PASSWORD_1 }}
           KEYSTORE_2: ${{ secrets.KEYSTORE_2 }}
           KEYSTORE_PASSWORD_2: ${{ secrets.KEYSTORE_PASSWORD_2 }}
-          BYEXAMPLE_LIVE_EVALUATION: ${{ vars.BYEXAMPLE_LIVE_EVALUATION }}
+          # On by default: this workflow only runs on purpose. Set the
+          # repository variable BYEXAMPLE_LIVE_EVALUATION to 0 to skip the real
+          # LLM round trip.
+          BYEXAMPLE_LIVE_EVALUATION: ${{ vars.BYEXAMPLE_LIVE_EVALUATION || '1' }}
         run: gltest --network studionet tests/integration -v
 
       - name: Print the registry address

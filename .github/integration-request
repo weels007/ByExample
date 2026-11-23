@@ -15,3 +15,5 @@ Requested runs
 - contract base class reached through the genlayer module
 
 - contract uses the gl namespace from the star import
+
+- live evaluation: run evaluate() against a real LLM and expect the second call to revert
