@@ -19,3 +19,5 @@ Requested runs
 - live evaluation: run evaluate() against a real LLM and expect the second call to revert
 
 - live evaluation retry: examples that pin the rule down, failure detail in the log
+
+- full method coverage: every read and write, plus malformed and hostile input

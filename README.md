@@ -164,7 +164,12 @@ rule, validator refusal of a rule that only fits the public examples, validator 
 malformed leader result, `apply` before and after evaluation, newest-first listing, and spec
 independence.
 
-Studionet (deploys one registry per session and prints its address):
+Studionet deploys one registry per session and prints its address. `tests/integration` covers the
+whole surface: `create_spec`, `evaluate`, `get_spec`, `get_result`, `apply`, `spec_count` and
+`list_specs`; creator-only evaluation and the once-only rule; twelve malformed or oversized
+`create_spec` payloads that must be refused without moving the counter; examples that try to talk
+to the model, which stay plain data; and a live evaluation whose stored rule is re-run off chain
+with Python's `re` to prove it reproduces every example, private ones included.
 
 ```bash
 KEYSTORE_1=... KEYSTORE_PASSWORD_1=... \
