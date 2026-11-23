@@ -15,18 +15,20 @@ Equivalence here is execution-based. The artifact is the rule, and the test is t
 
 ## Status
 
-- Contract: `contracts/by_example.py` — written, direct test suite in `tests/direct`.
-- Integration suite: `tests/integration` (Studionet), gated live evaluation behind
-  `BYEXAMPLE_LIVE_EVALUATION=1`.
-- Frontend: React 18 + TypeScript + Vite, hash routes, static build.
-- **Registry address: not set yet.** `REGISTRY_ADDRESS` in `src/lib/genlayer.ts` is intentionally
-  empty, because an address is only worth hardcoding once the integration suite has actually
-  deployed the contract. Until it is filled in, the UI shows a "registry not deployed" banner and
-  disables reads and writes.
+- Contract: `contracts/by_example.py`, deployed on Studionet at
+  `0xD13569BAc518384a01f8Bc619E005487e469f18B`. The integration suite deploys a fresh registry and
+  exercises it on every run; the address printed last was the one hardcoded in
+  `REGISTRY_ADDRESS` (`src/lib/genlayer.ts`).
+- Integration: green on Studionet — deploy, create, read, outsider refusal and invalid-create
+  revert pass; the live LLM evaluation is skipped unless `BYEXAMPLE_LIVE_EVALUATION=1`.
+- Frontend: green — `npm run typecheck` and `npm run build` pass in CI.
+- Direct suite: `genvm-lint` passes, but `pytest tests/direct` currently dies before the first
+  assertion while the direct runner downloads its GenVM artifacts (an HTTP 404 from the release
+  it resolves to). That is an SDK-download problem in CI, not a test result: the direct tests have
+  not produced a verdict yet.
 
-The direct suite was not executed in the environment this repository was written in (no Python or
-Node runtime available there), so treat the first `pytest tests/direct -v` and `npm run build` as
-the real check. Everything below is what the code is written to do.
+The contract itself is proven on chain by the integration suite; everything you read below about
+the direct tests is what those tests assert, not a report that they passed.
 
 ---
 
