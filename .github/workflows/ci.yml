@@ -23,7 +23,7 @@ jobs:
         run: genvm-lint check contracts/by_example.py
 
       - name: Direct tests
-        run: pytest tests/direct -v
+        run: pytest tests/direct -x -vv --tb=long
 
   frontend:
     name: Frontend (typecheck + build)
