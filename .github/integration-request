@@ -23,3 +23,5 @@ Requested runs
 - full method coverage: every read and write, plus malformed and hostile input
 
 - redeploy after the rejection-reason change, so the documented address matches the source
+
+- retry after FeesDistributionMissing, with the tooling pinned
