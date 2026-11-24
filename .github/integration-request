@@ -31,3 +31,5 @@ Requested runs
 - retry with a quoted fee distribution on every deploy and write
 
 - confirm the run reaches the network again after the fee-quote fallback
+
+- genlayer-test 0.30 / genlayer-py 0.19: quote a fee distribution on every deploy and write

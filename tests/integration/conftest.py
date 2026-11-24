@@ -11,7 +11,7 @@ import pytest
 from gltest import create_accounts, get_contract_factory, get_default_account
 from gltest.assertions import tx_execution_succeeded
 
-from helpers import create_spec, describe_failure
+from helpers import create_spec, describe_failure, fee_kwargs
 from keystore import load_account
 
 CONTRACT_FILE = str(Path(__file__).resolve().parents[2] / "contracts" / "by_example.py")
@@ -37,10 +37,7 @@ def outsider_account(owner_account):
 @pytest.fixture(scope="session")
 def registry(owner_account):
     factory = get_contract_factory(contract_file_path=CONTRACT_FILE)
-    # No fee distribution: genlayer-test 0.29.2 does not accept one on deploy
-    # and genlayer-py 0.16 cannot quote one. Studionet currently refuses such
-    # writes, which is why this fixture reports a network failure.
-    contract = factory.deploy(args=[], account=owner_account)
+    contract = factory.deploy(args=[], account=owner_account, **fee_kwargs())
     address = str(contract.address)
     print(f"[integration] registry {address}")
     try:
@@ -57,7 +54,7 @@ def evaluated_spec(registry):
         pytest.skip("set BYEXAMPLE_LIVE_EVALUATION=1 to run a real LLM evaluation")
 
     spec_id = create_spec(registry, title="Live evaluation")
-    receipt = registry.evaluate(args=[spec_id]).transact(
+    receipt = registry.evaluate(args=[spec_id], **fee_kwargs()).transact(
         wait_interval=5000,
         wait_retries=120,
     )

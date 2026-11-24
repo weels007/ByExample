@@ -19,13 +19,10 @@ Equivalence here is execution-based. The artifact is the rule, and the test is t
   `0x7F82C6981049285Fda700DB6daA0A158a6d28134` (commit `99a5736`), the run where 13 of 13
   integration tests passed in 3m47s. That registry holds a spec whose rule a real LLM evaluation
   accepted.
-- Integration: green on that deployment. Afterwards Studionet began refusing writes that arrive
-  without a fee distribution — first `FeesDistributionMissing`, then a plain `Transaction failed` —
-  and the pinned Python toolchain cannot supply one: genlayer-py 0.16 (via genlayer-test 0.29.2)
-  has no fee estimator, and `deploy()` does not accept a `fees` argument. The suite therefore
-  submits as it always did and the network refuses it, while the app quotes
-  `estimateTransactionFees` before signing when the SDK offers it. Re-deploying the current source
-  waits on a genlayer-test release that can fund a transaction.
+- Integration: green on that deployment, and re-run against the current toolchain — genlayer-test
+  0.30.0 on genlayer-py 0.19.0, genlayer-js 2.0.0. Studionet refuses a write that arrives without a
+  fee distribution, so every deploy and transact in the suite carries one quoted from live policy
+  via `estimate_transaction_fees`, and the app quotes `estimateTransactionFees` before signing.
 - Frontend: green — `npm run typecheck` and `npm run build` pass in CI.
 - Direct suite: `genvm-lint` passes and the whole `tests/direct` suite passes in CI. The runner
   looks for a GenVM release asset under a name recent releases no longer publish, so `ci.yml` seeds
