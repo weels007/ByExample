@@ -164,11 +164,43 @@ export type CreateSpecInput = {
   cases: CaseExample[]
 }
 
+function specNumber(specId: string): number {
+  const value = Number(specId.replace('spec-', ''))
+  return Number.isFinite(value) ? value : 0
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms))
+}
+
+/**
+ * The id is not part of a transaction's receipt, and reading spec_count after
+ * the write picks up anyone else's spec created in the same block. So take the
+ * counter before signing and return the first spec above that snapshot that
+ * belongs to this wallet.
+ */
+async function findOwnSpecAfter(before: number, address: string): Promise<string | null> {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const after = await fetchSpecCount()
+    if (after > before) {
+      const summaries = await fetchSpecSummaries()
+      const mine = summaries
+        .filter((item) => sameAddress(item.creator, address) && specNumber(item.id) > before)
+        .sort((a, b) => specNumber(a.id) - specNumber(b.id))
+      if (mine.length > 0) return mine[0].id
+    }
+    await delay(1500)
+  }
+  return null
+}
+
 export async function createSpec(
   input: CreateSpecInput,
   address: string,
   provider: unknown,
 ): Promise<string> {
+  const before = await fetchSpecCount()
+
   const client = getWalletClient(address, provider)
   const hash = await client.writeContract({
     address: requireAddress(),
@@ -182,16 +214,8 @@ export async function createSpec(
     retries: Math.floor(CREATE_TIMEOUT_MS / WAIT_INTERVAL_MS),
   })
 
-  const count = await fetchSpecCount()
-  const specId = 'spec-' + String(count).padStart(6, '0')
-
-  let spec: Spec | null = null
-  try {
-    spec = await fetchSpec(specId)
-  } catch {
-    spec = null
-  }
-  if (!spec || !sameAddress(spec.creator, address)) {
+  const specId = await findOwnSpecAfter(before, address)
+  if (!specId) {
     throw new Error(
       'The transaction did not create a spec. Nothing was stored — check your wallet and the examples, then try again.',
     )

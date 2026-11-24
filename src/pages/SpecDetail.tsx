@@ -141,7 +141,9 @@ export function SpecDetail({ specId, wallet }: SpecDetailProps) {
           <h2>Accepted rule</h2>
           <p className="muted">
             Proposed from the public examples, then replayed by validators over every example
-            before it was stored. Evaluation happens once per spec.
+            before it was stored. Verified means the rule reproduces these examples — all supplied
+            by the creator — not that the transformation is the one you wanted. Evaluation happens
+            once per spec.
           </p>
           <div className="rule">
             <div className="rule-row">

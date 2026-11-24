@@ -264,7 +264,14 @@ class ByExample(gl.Contract):
         if not isinstance(proposal, dict):
             raise gl.vm.UserError("evaluation failed: the network agreed on an unexpected proposal")
         if proposal.get("status") != "ok":
-            reason = proposal.get("reason")
+            # Re-derive the reason from the artifact rather than echoing the
+            # leader's prose, so no leader-authored text reaches the revert.
+            rejected = check_rule(
+                proposal.get("pattern"),
+                proposal.get("replacement"),
+                proposal.get("flags"),
+            )
+            reason = rejected.get("reason")
             if not isinstance(reason, str) or len(reason) == 0:
                 reason = "no rule reproduced every example"
             raise gl.vm.UserError("evaluation failed: " + reason)

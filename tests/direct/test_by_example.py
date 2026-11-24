@@ -326,6 +326,26 @@ def test_evaluate_rejects_broken_llm_json(direct_vm, direct_deploy, direct_bob):
     assert registry.get_result(spec_id) == ""
 
 
+def test_private_examples_never_reach_the_prompt(direct_vm, direct_deploy, direct_bob):
+    registry = deploy(direct_deploy)
+    spec_id = create(direct_vm, registry, direct_bob)
+
+    # This mock is registered first, so it wins if the private input appears in
+    # the prompt. Its rule reproduces nothing, so a leak would refuse the
+    # evaluation instead of storing a rule.
+    direct_vm.mock_llm(
+        r"wait!!",
+        json.dumps({"pattern": "^$", "replacement": "", "flags": ""}),
+    )
+    mock_rule(direct_vm, "!+$")
+
+    registry.evaluate(spec_id)
+
+    result = json.loads(registry.get_result(spec_id))
+    assert result["pattern"] == "!+$"
+    assert result["passed"] == [True, True, True]
+
+
 # --------------------------------------------------------------------------
 # the validator
 # --------------------------------------------------------------------------
