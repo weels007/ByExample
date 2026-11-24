@@ -26,8 +26,20 @@ TRAILING_BANGS = [
 
 
 def fee_preset():
-    """A fee distribution and deposit for one transaction, priced right now."""
-    estimate = get_gl_client().estimate_transaction_fees(FEE_ESTIMATE_OPTIONS)
+    """A fee distribution for one transaction, or None if the SDK cannot quote one.
+
+    genlayer-py 0.16 — the version genlayer-test pins — has no fee estimator,
+    while current Studionet refuses a write that carries no distribution. The
+    call is skipped rather than raised, so a run still reaches the network and
+    reports what the network actually says.
+    """
+    client = get_gl_client()
+    estimate_fees = getattr(client, "estimate_transaction_fees", None)
+    if estimate_fees is None:
+        return None
+    estimate = estimate_fees(FEE_ESTIMATE_OPTIONS)
+    if not estimate:
+        return None
     return {
         "distribution": estimate["distribution"],
         "feeValue": estimate["feeValue"],
