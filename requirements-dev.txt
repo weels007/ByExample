@@ -1,6 +1,7 @@
-# Pinned. genlayer-test 0.30 is the first release built on genlayer-py 0.19,
-# which is what can quote a fee distribution — Studionet refuses writes without
-# one — and what the current GenLayer docs target.
-genlayer-test==0.30.0
+# Toolchain for the direct suite. genlayer-test 0.29.2 runs on genlayer-py 0.16,
+# whose direct runner loads this contract's pinned py-genlayer SDK; 0.30 moved
+# to genlayer-py 0.19 and its direct loader cannot import it ("unexpected end of
+# memory"). The integration suite uses requirements-integration.txt instead.
+genlayer-test==0.29.2
 genvm-linter==0.11.0
 pytest==9.2.0

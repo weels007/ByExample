@@ -15,14 +15,19 @@ Equivalence here is execution-based. The artifact is the rule, and the test is t
 
 ## Status
 
-- Contract: `contracts/by_example.py`, last deployed on Studionet at
-  `0x7F82C6981049285Fda700DB6daA0A158a6d28134` (commit `99a5736`), the run where 13 of 13
-  integration tests passed in 3m47s. That registry holds a spec whose rule a real LLM evaluation
-  accepted.
-- Integration: green on that deployment, and re-run against the current toolchain — genlayer-test
-  0.30.0 on genlayer-py 0.19.0, genlayer-js 2.0.0. Studionet refuses a write that arrives without a
-  fee distribution, so every deploy and transact in the suite carries one quoted from live policy
-  via `estimate_transaction_fees`, and the app quotes `estimateTransactionFees` before signing.
+- Contract: `contracts/by_example.py`, deployed on Studionet at
+  `0x5ee73a47efA83553Da767b391e4fcf6CD7931dcc` by the integration workflow. On that deployment 12
+  of 13 integration tests passed, including a live LLM evaluation whose stored rule is replayed by
+  `apply`; the one failure was a `502 Bad Gateway` from the Studio gateway during the adversarial
+  loop, not a contract result.
+- Integration: genlayer-test 0.30.0 on genlayer-py 0.19.0. Studionet refuses a write that arrives
+  without a fee distribution, so every deploy and transact in the suite carries one quoted from live
+  policy via `estimate_transaction_fees`; the app quotes `estimateTransactionFees` on genlayer-js
+  2.0.0 before signing.
+- Toolchains: the direct suite stays on genlayer-test 0.29.2 (`requirements-dev.txt`), because the
+  0.30 direct runner cannot import this contract's pinned py-genlayer SDK — it fails with
+  "unexpected end of memory" before any test runs. The integration suite uses
+  `requirements-integration.txt`.
 - Frontend: green — `npm run typecheck` and `npm run build` pass in CI.
 - Direct suite: `genvm-lint` passes and the whole `tests/direct` suite passes in CI. The runner
   looks for a GenVM release asset under a name recent releases no longer publish, so `ci.yml` seeds

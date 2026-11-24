@@ -22,7 +22,19 @@ jobs:
       - name: Lint the Intelligent Contract
         run: genvm-lint check contracts/by_example.py
 
+      - name: Seed the direct runner cache
+        # The 0.29 runner looks for a release asset called
+        # genvm-universal.tar.xz, a name current GenVM releases no longer
+        # publish, so the same bundle is placed in its cache under that name.
+        run: |
+          mkdir -p "$HOME/.cache/gltest-direct"
+          curl -fsSL -o "$HOME/.cache/gltest-direct/genvm-universal-v0.3.0-rc7.tar.xz" \
+            "https://github.com/genlayerlabs/genvm/releases/download/v0.3.0-rc7/genvm-runners-all.tar.xz"
+          ls -l "$HOME/.cache/gltest-direct"
+
       - name: Direct tests
+        env:
+          GENVM_VERSION: "v0.3.0-rc7"
         run: pytest tests/direct -v
 
   frontend:

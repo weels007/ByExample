@@ -1,0 +1,6 @@
+# Toolchain for the Studionet integration suite. genlayer-test 0.30 is the first
+# release on genlayer-py 0.19, which can quote a fee distribution — Studionet
+# refuses a write without one. The direct suite keeps the older pin, see
+# requirements-dev.txt.
+genlayer-test==0.30.0
+pytest==9.2.0
