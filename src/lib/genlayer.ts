@@ -31,6 +31,7 @@ type ContractCall = {
   address: `0x${string}`
   functionName: string
   args?: unknown[]
+  fees?: unknown
 }
 
 export type GenLayerClient = {
@@ -164,6 +165,35 @@ export type CreateSpecInput = {
   cases: CaseExample[]
 }
 
+// GenLayer prices each transaction against the live fee policy, and a write
+// submitted without a distribution is refused. These are the documented
+// starting allocations; the SDK quotes distribution and deposit from them.
+const FEE_ESTIMATE_OPTIONS = {
+  leaderTimeunitsAllocation: 100n,
+  validatorTimeunitsAllocation: 200n,
+  totalMessageFees: 0n,
+  rotations: [1n],
+}
+
+type FeeEstimate = { distribution?: unknown; feeValue?: unknown }
+
+type FeeCapableClient = GenLayerClient & {
+  estimateTransactionFees?: (options: Record<string, unknown>) => Promise<FeeEstimate | null>
+}
+
+async function feeOptions(client: GenLayerClient): Promise<{ fees?: unknown }> {
+  const capable = client as FeeCapableClient
+  if (typeof capable.estimateTransactionFees !== 'function') return {}
+  try {
+    const estimate = await capable.estimateTransactionFees(FEE_ESTIMATE_OPTIONS)
+    if (!estimate || estimate.distribution === undefined) return {}
+    return { fees: { distribution: estimate.distribution, feeValue: estimate.feeValue } }
+  } catch {
+    // An older SDK, or a network without fee policy: submit as it did before.
+    return {}
+  }
+}
+
 function specNumber(specId: string): number {
   const value = Number(specId.replace('spec-', ''))
   return Number.isFinite(value) ? value : 0
@@ -202,10 +232,12 @@ export async function createSpec(
   const before = await fetchSpecCount()
 
   const client = getWalletClient(address, provider)
+  const fee = await feeOptions(client)
   const hash = await client.writeContract({
     address: requireAddress(),
     functionName: 'create_spec',
     args: [input.title, input.description, JSON.stringify(input.cases)],
+    ...fee,
   })
 
   await client.waitForTransactionReceipt({
@@ -229,10 +261,12 @@ export async function evaluateSpec(
   provider: unknown,
 ): Promise<void> {
   const client = getWalletClient(address, provider)
+  const fee = await feeOptions(client)
   const hash = await client.writeContract({
     address: requireAddress(),
     functionName: 'evaluate',
     args: [specId],
+    ...fee,
   })
   await client.waitForTransactionReceipt({
     hash,

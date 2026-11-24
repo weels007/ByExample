@@ -3,6 +3,18 @@
 import json
 
 from gltest.assertions import tx_execution_succeeded
+from gltest.clients import get_gl_client
+
+# Studionet rejects a write that arrives without a fee distribution, so every
+# deploy and every transact here carries one quoted from the live policy. The
+# allocations are the documented starting point; the SDK prices them against
+# the network and returns the distribution plus the deposit.
+FEE_ESTIMATE_OPTIONS = {
+    "leaderTimeunitsAllocation": 100,
+    "validatorTimeunitsAllocation": 200,
+    "totalMessageFees": 0,
+    "rotations": [1],
+}
 
 # Two public examples that end with a different number of marks, so a rule
 # fitted to them cannot be "one trailing mark" — it has to strip them all.
@@ -11,6 +23,15 @@ TRAILING_BANGS = [
     {"input": "Ship it!", "output": "Ship it", "public": True},
     {"input": "Done!!!", "output": "Done", "public": False},
 ]
+
+
+def fee_preset():
+    """A fee distribution and deposit for one transaction, priced right now."""
+    estimate = get_gl_client().estimate_transaction_fees(FEE_ESTIMATE_OPTIONS)
+    return {
+        "distribution": estimate["distribution"],
+        "feeValue": estimate["feeValue"],
+    }
 
 
 def cases_json(cases):
@@ -29,7 +50,10 @@ def describe_failure(receipt):
 def create_spec(registry, title, cases=None, description="an integration spec"):
     """Create a spec that must succeed, and return the id the registry gave it."""
     payload = cases_json(TRAILING_BANGS if cases is None else cases)
-    receipt = registry.create_spec(args=[title, description, payload]).transact()
+    receipt = registry.create_spec(
+        args=[title, description, payload],
+        fees=fee_preset(),
+    ).transact()
     assert tx_execution_succeeded(receipt), describe_failure(receipt)
     number = int(registry.spec_count().call())
     return "spec-" + str(number).zfill(6)

@@ -4,7 +4,7 @@ import json
 
 from gltest.assertions import tx_execution_failed
 
-from helpers import TRAILING_BANGS, cases_json, create_spec, describe_failure
+from helpers import TRAILING_BANGS, cases_json, create_spec, describe_failure, fee_preset
 
 
 def _cases(count, public=2):
@@ -85,7 +85,10 @@ def test_invalid_creates_are_refused_and_change_nothing(registry):
 
     for label, title, description, payload in INVALID_CREATES:
         body = payload if isinstance(payload, str) else cases_json(payload)
-        receipt = registry.create_spec(args=[title, description, body]).transact()
+        receipt = registry.create_spec(
+            args=[title, description, body],
+            fees=fee_preset(),
+        ).transact()
         assert tx_execution_failed(receipt), label + " was accepted: " + describe_failure(receipt)
 
     assert int(registry.spec_count().call()) == before

@@ -15,14 +15,15 @@ Equivalence here is execution-based. The artifact is the rule, and the test is t
 
 ## Status
 
-- Contract: `contracts/by_example.py`, deployed on Studionet at
-  `0x7F82C6981049285Fda700DB6daA0A158a6d28134`. That registry holds a spec whose rule a real LLM
-  evaluation accepted; the integration suite deploys a fresh one on every run, and the address
-  printed last is the one hardcoded in `REGISTRY_ADDRESS` (`src/lib/genlayer.ts`).
-- Integration: 13 of 13 green on Studionet, in 3m47s — every read and write method, creator-only
-  and once-only evaluation, twelve malformed `create_spec` payloads refused without moving the
-  counter, prompt-injection text kept as data, a live LLM evaluation, and the stored rule re-run
-  off chain to prove it reproduces every example.
+- Contract: `contracts/by_example.py`, last deployed on Studionet at
+  `0x7F82C6981049285Fda700DB6daA0A158a6d28134` (commit `99a5736`), the run where 13 of 13
+  integration tests passed in 3m47s. That registry holds a spec whose rule a real LLM evaluation
+  accepted.
+- Integration: green on that deployment. Afterwards Studionet began refusing writes that arrive
+  without a fee distribution — first `FeesDistributionMissing`, then a plain `Transaction failed` —
+  so the suite now quotes a preset from `estimate_transaction_fees` for every deploy and transact,
+  and the app does the same before signing. Re-deploying the current source waits on the network
+  accepting those writes; every other check below still runs.
 - Frontend: green — `npm run typecheck` and `npm run build` pass in CI.
 - Direct suite: `genvm-lint` passes and the whole `tests/direct` suite passes in CI. The runner
   looks for a GenVM release asset under a name recent releases no longer publish, so `ci.yml` seeds

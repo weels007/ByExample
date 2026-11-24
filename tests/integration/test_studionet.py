@@ -8,7 +8,7 @@ import json
 
 from gltest.assertions import tx_execution_failed
 
-from helpers import TRAILING_BANGS, cases_json, create_spec
+from helpers import TRAILING_BANGS, cases_json, create_spec, fee_preset
 
 
 def test_deploy_create_and_read(registry):
@@ -35,7 +35,7 @@ def test_outsider_cannot_evaluate(registry, outsider_account):
     spec_id = create_spec(registry, title="Outsider guard")
 
     outsider = registry.connect(outsider_account)
-    receipt = outsider.evaluate(args=[spec_id]).transact()
+    receipt = outsider.evaluate(args=[spec_id], fees=fee_preset()).transact()
     assert tx_execution_failed(receipt)
 
     spec = json.loads(registry.get_spec(args=[spec_id]).call())
@@ -47,7 +47,8 @@ def test_invalid_create_reverts_without_storing(registry):
 
     too_few = TRAILING_BANGS[:2]
     receipt = registry.create_spec(
-        args=["Too few examples", "only two examples", cases_json(too_few)]
+        args=["Too few examples", "only two examples", cases_json(too_few)],
+        fees=fee_preset(),
     ).transact()
     assert tx_execution_failed(receipt)
     assert int(registry.spec_count().call()) == before
@@ -58,7 +59,8 @@ def test_invalid_create_reverts_without_storing(registry):
         {"input": "third!", "output": "third", "public": False},
     ]
     receipt = registry.create_spec(
-        args=["Duplicate inputs", "repeated input", cases_json(duplicate)]
+        args=["Duplicate inputs", "repeated input", cases_json(duplicate)],
+        fees=fee_preset(),
     ).transact()
     assert tx_execution_failed(receipt)
     assert int(registry.spec_count().call()) == before
@@ -79,7 +81,7 @@ def test_live_evaluation_end_to_end(registry, evaluated_spec):
     assert registry.apply(args=[evaluated_spec, "Ship it!!!"]).call() == "Ship it"
 
     # A spec is evaluated once.
-    receipt = registry.evaluate(args=[evaluated_spec]).transact(
+    receipt = registry.evaluate(args=[evaluated_spec], fees=fee_preset()).transact(
         wait_interval=5000,
         wait_retries=60,
     )
