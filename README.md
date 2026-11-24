@@ -16,12 +16,13 @@ Equivalence here is execution-based. The artifact is the rule, and the test is t
 ## Status
 
 - Contract: `contracts/by_example.py`, deployed on Studionet at
-  `0x4Ba4d2aa82043912BA51B0FA7C8F2c0a5bCdFdF4`. That registry holds a spec whose rule a real LLM
+  `0x7F82C6981049285Fda700DB6daA0A158a6d28134`. That registry holds a spec whose rule a real LLM
   evaluation accepted; the integration suite deploys a fresh one on every run, and the address
   printed last is the one hardcoded in `REGISTRY_ADDRESS` (`src/lib/genlayer.ts`).
-- Integration: 4 of 4 green on Studionet — deploy, create, read, outsider refusal, invalid-create
-  revert, and a live evaluation that stores the accepted rule, replays it through `apply` and is
-  refused a second time.
+- Integration: 13 of 13 green on Studionet, in 3m47s — every read and write method, creator-only
+  and once-only evaluation, twelve malformed `create_spec` payloads refused without moving the
+  counter, prompt-injection text kept as data, a live LLM evaluation, and the stored rule re-run
+  off chain to prove it reproduces every example.
 - Frontend: green — `npm run typecheck` and `npm run build` pass in CI.
 - Direct suite: `genvm-lint` passes and all 39 tests in `tests/direct` pass in CI. The runner looks
   for a GenVM release asset under a name recent releases no longer publish, so `ci.yml` seeds its
