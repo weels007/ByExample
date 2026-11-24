@@ -147,25 +147,39 @@ class ByExample(gl.Contract):
                 public_cases.append(case)
 
         def check_rule(pattern, replacement, flags):
-            """Run one proposed rule against every example, public and private."""
-            if not isinstance(pattern, str) or len(pattern) == 0:
-                return {"status": "rejected", "reason": "the model returned no pattern"}
-            if len(pattern) > 200:
-                return {"status": "rejected", "reason": "the pattern is longer than 200 characters"}
-            if not isinstance(replacement, str):
-                return {"status": "rejected", "reason": "the model returned no replacement"}
-            if len(replacement) > 200:
-                return {"status": "rejected", "reason": "the replacement is longer than 200 characters"}
-            if not isinstance(flags, str):
-                return {"status": "rejected", "reason": "the flags field is not a string"}
+            """Run one proposed rule against every example, public and private.
+
+            Every outcome carries the artifact that was examined, so a refusal
+            can be re-derived from it later without trusting leader prose.
+            """
+            pattern_text = pattern if isinstance(pattern, str) else ""
+            replacement_text = replacement if isinstance(replacement, str) else ""
+            flags_text = flags if isinstance(flags, str) else ""
+
+            def rejected(reason):
+                return {
+                    "status": "rejected",
+                    "reason": reason,
+                    "pattern": pattern_text,
+                    "replacement": replacement_text,
+                    "flags": flags_text,
+                }
+
+            if len(pattern_text) == 0:
+                return rejected("the model returned no pattern")
+            if len(pattern_text) > 200:
+                return rejected("the pattern is longer than 200 characters")
+            # A missing or empty replacement is legal: the rule may delete text.
+            if len(replacement_text) > 200:
+                return rejected("the replacement is longer than 200 characters")
 
             bits = 0
             used = ""
-            for letter in flags:
+            for letter in flags_text:
                 if letter not in "ims":
-                    return {"status": "rejected", "reason": "the flags may only use i, m and s"}
+                    return rejected("the flags may only use i, m and s")
                 if letter in used:
-                    return {"status": "rejected", "reason": "the flags repeat a letter"}
+                    return rejected("the flags repeat a letter")
                 used = used + letter
                 if letter == "i":
                     bits = bits | re.I
@@ -176,25 +190,22 @@ class ByExample(gl.Contract):
 
             # ReDoS guard: a quantifier right after a quantified group is the
             # classic exponential blow-up, so the rule is refused before it runs.
-            if re.search(r"[+*]\)[+*{]", pattern) is not None:
-                return {"status": "rejected", "reason": "the pattern stacks quantifiers, which can hang a validator"}
+            if re.search(r"[+*]\)[+*{]", pattern_text) is not None:
+                return rejected("the pattern stacks quantifiers, which can hang a validator")
 
             try:
-                compiled = re.compile(pattern, bits)
+                compiled = re.compile(pattern_text, bits)
             except Exception:
-                return {"status": "rejected", "reason": "the pattern is not a valid regular expression"}
+                return rejected("the pattern is not a valid regular expression")
 
             passed = []
             index = 0
             while index < len(cases):
                 case = cases[index]
                 try:
-                    produced = compiled.sub(replacement, case["input"])
+                    produced = compiled.sub(replacement_text, case["input"])
                 except Exception:
-                    return {
-                        "status": "rejected",
-                        "reason": "the pattern cannot be applied to example " + str(index + 1),
-                    }
+                    return rejected("the pattern cannot be applied to example " + str(index + 1))
                 if produced == case["output"]:
                     passed.append(True)
                 else:
@@ -202,16 +213,13 @@ class ByExample(gl.Contract):
                 index = index + 1
 
             if False in passed:
-                return {
-                    "status": "rejected",
-                    "reason": "the pattern does not reproduce example " + str(passed.index(False) + 1),
-                }
+                return rejected("the pattern does not reproduce example " + str(passed.index(False) + 1))
 
             return {
                 "status": "ok",
-                "pattern": pattern,
-                "replacement": replacement,
-                "flags": flags,
+                "pattern": pattern_text,
+                "replacement": replacement_text,
+                "flags": flags_text,
                 "passed": passed,
             }
 
