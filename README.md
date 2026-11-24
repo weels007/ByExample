@@ -21,10 +21,11 @@ Equivalence here is execution-based. The artifact is the rule, and the test is t
   accepted.
 - Integration: green on that deployment. Afterwards Studionet began refusing writes that arrive
   without a fee distribution — first `FeesDistributionMissing`, then a plain `Transaction failed` —
-  and the Python SDK the suite pins (genlayer-py 0.16, via genlayer-test 0.29.2) has no fee
-  estimator, so the suite asks for one when it is available and otherwise submits as before. The
-  app quotes `estimateTransactionFees` before signing, because genlayer-js has it. Re-deploying the
-  current source waits on the network accepting those writes.
+  and the pinned Python toolchain cannot supply one: genlayer-py 0.16 (via genlayer-test 0.29.2)
+  has no fee estimator, and `deploy()` does not accept a `fees` argument. The suite therefore
+  submits as it always did and the network refuses it, while the app quotes
+  `estimateTransactionFees` before signing when the SDK offers it. Re-deploying the current source
+  waits on a genlayer-test release that can fund a transaction.
 - Frontend: green — `npm run typecheck` and `npm run build` pass in CI.
 - Direct suite: `genvm-lint` passes and the whole `tests/direct` suite passes in CI. The runner
   looks for a GenVM release asset under a name recent releases no longer publish, so `ci.yml` seeds
