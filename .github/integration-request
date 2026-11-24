@@ -27,3 +27,5 @@ Requested runs
 - retry after FeesDistributionMissing, with the tooling pinned
 
 - retry after the check_rule artifact fix, to see whether Studionet accepts deploys again
+
+- retry with a quoted fee distribution on every deploy and write
