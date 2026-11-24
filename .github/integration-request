@@ -21,3 +21,5 @@ Requested runs
 - live evaluation retry: examples that pin the rule down, failure detail in the log
 
 - full method coverage: every read and write, plus malformed and hostile input
+
+- redeploy after the rejection-reason change, so the documented address matches the source
