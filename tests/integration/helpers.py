@@ -60,10 +60,9 @@ def describe_failure(receipt):
 def create_spec(registry, title, cases=None, description="an integration spec"):
     """Create a spec that must succeed, and return the id the registry gave it."""
     payload = cases_json(TRAILING_BANGS if cases is None else cases)
-    receipt = registry.create_spec(
-        args=[title, description, payload],
+    receipt = registry.create_spec(args=[title, description, payload]).transact(
         **fee_kwargs(),
-    ).transact()
+    )
     assert tx_execution_succeeded(receipt), describe_failure(receipt)
     number = int(registry.spec_count().call())
     return "spec-" + str(number).zfill(6)

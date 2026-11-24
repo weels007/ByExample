@@ -35,7 +35,7 @@ def test_outsider_cannot_evaluate(registry, outsider_account):
     spec_id = create_spec(registry, title="Outsider guard")
 
     outsider = registry.connect(outsider_account)
-    receipt = outsider.evaluate(args=[spec_id], **fee_kwargs()).transact()
+    receipt = outsider.evaluate(args=[spec_id]).transact(**fee_kwargs())
     assert tx_execution_failed(receipt)
 
     spec = json.loads(registry.get_spec(args=[spec_id]).call())
@@ -47,9 +47,8 @@ def test_invalid_create_reverts_without_storing(registry):
 
     too_few = TRAILING_BANGS[:2]
     receipt = registry.create_spec(
-        args=["Too few examples", "only two examples", cases_json(too_few)],
-        **fee_kwargs(),
-    ).transact()
+        args=["Too few examples", "only two examples", cases_json(too_few)]
+    ).transact(**fee_kwargs())
     assert tx_execution_failed(receipt)
     assert int(registry.spec_count().call()) == before
 
@@ -59,9 +58,8 @@ def test_invalid_create_reverts_without_storing(registry):
         {"input": "third!", "output": "third", "public": False},
     ]
     receipt = registry.create_spec(
-        args=["Duplicate inputs", "repeated input", cases_json(duplicate)],
-        **fee_kwargs(),
-    ).transact()
+        args=["Duplicate inputs", "repeated input", cases_json(duplicate)]
+    ).transact(**fee_kwargs())
     assert tx_execution_failed(receipt)
     assert int(registry.spec_count().call()) == before
 
@@ -81,8 +79,9 @@ def test_live_evaluation_end_to_end(registry, evaluated_spec):
     assert registry.apply(args=[evaluated_spec, "Ship it!!!"]).call() == "Ship it"
 
     # A spec is evaluated once.
-    receipt = registry.evaluate(args=[evaluated_spec], **fee_kwargs()).transact(
+    receipt = registry.evaluate(args=[evaluated_spec]).transact(
         wait_interval=5000,
         wait_retries=60,
+        **fee_kwargs(),
     )
     assert tx_execution_failed(receipt)

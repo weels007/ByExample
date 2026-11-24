@@ -85,10 +85,9 @@ def test_invalid_creates_are_refused_and_change_nothing(registry):
 
     for label, title, description, payload in INVALID_CREATES:
         body = payload if isinstance(payload, str) else cases_json(payload)
-        receipt = registry.create_spec(
-            args=[title, description, body],
+        receipt = registry.create_spec(args=[title, description, body]).transact(
             **fee_kwargs(),
-        ).transact()
+        )
         assert tx_execution_failed(receipt), label + " was accepted: " + describe_failure(receipt)
 
     assert int(registry.spec_count().call()) == before

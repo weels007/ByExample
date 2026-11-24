@@ -33,3 +33,5 @@ Requested runs
 - confirm the run reaches the network again after the fee-quote fallback
 
 - genlayer-test 0.30 / genlayer-py 0.19: quote a fee distribution on every deploy and write
+
+- fees on transact rather than on the method call; let gltest 0.30 fetch its own runner

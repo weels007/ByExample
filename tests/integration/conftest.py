@@ -54,9 +54,10 @@ def evaluated_spec(registry):
         pytest.skip("set BYEXAMPLE_LIVE_EVALUATION=1 to run a real LLM evaluation")
 
     spec_id = create_spec(registry, title="Live evaluation")
-    receipt = registry.evaluate(args=[spec_id], **fee_kwargs()).transact(
+    receipt = registry.evaluate(args=[spec_id]).transact(
         wait_interval=5000,
         wait_retries=120,
+        **fee_kwargs(),
     )
     assert tx_execution_succeeded(receipt), describe_failure(receipt)
     return spec_id
