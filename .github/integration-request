@@ -25,3 +25,5 @@ Requested runs
 - redeploy after the rejection-reason change, so the documented address matches the source
 
 - retry after FeesDistributionMissing, with the tooling pinned
+
+- retry after the check_rule artifact fix, to see whether Studionet accepts deploys again
