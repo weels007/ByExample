@@ -82,7 +82,11 @@ export function Specs({ wallet }: { wallet: Wallet }) {
       {error ? <p className="error">{error}</p> : null}
 
       {loading && summaries.length === 0 ? (
-        <p className="muted">Reading the registry…</p>
+        <div className="grid grid-3">
+          <div className="skeleton" />
+          <div className="skeleton" />
+          <div className="skeleton" />
+        </div>
       ) : filtered.length === 0 ? (
         <div className="card empty">
           <p>Nothing here yet.</p>

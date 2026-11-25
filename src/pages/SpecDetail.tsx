@@ -85,7 +85,8 @@ export function SpecDetail({ specId, wallet }: SpecDetailProps) {
   if (loading) {
     return (
       <div className="page">
-        <p className="muted">Reading {specId}…</p>
+        <div className="skeleton" />
+        <div className="skeleton" />
       </div>
     )
   }
@@ -97,7 +98,7 @@ export function SpecDetail({ specId, wallet }: SpecDetailProps) {
           ← All specs
         </a>
         <div className="card empty">
-          <h1>Spec not found</h1>
+          <h2>Spec not found</h2>
           <p className="muted">{error ?? 'This spec does not exist on the registry.'}</p>
         </div>
       </div>
@@ -136,65 +137,76 @@ export function SpecDetail({ specId, wallet }: SpecDetailProps) {
 
       {notice ? <p className={spec.evaluated ? 'notice' : 'notice notice-warn'}>{notice}</p> : null}
 
-      {spec.evaluated ? (
-        <section className="card card-accent">
-          <h2>Accepted rule</h2>
-          <p className="muted">
-            Proposed from the public examples, then replayed by validators over every example
-            before it was stored. Verified means the rule reproduces these examples — all supplied
-            by the creator — not that the transformation is the one you wanted. Evaluation happens
-            once per spec.
-          </p>
-          <div className="rule">
-            <div className="rule-row">
-              <span className="rule-label">pattern</span>
-              <code className="mono">{result ? result.pattern : '…'}</code>
+      <div className="detail-grid">
+        <div className="detail-main">
+          <section className="card">
+            <div className="section-head">
+              <h2>Examples</h2>
+              <span className="mono muted">
+                {cases.length - privateCount} public · {privateCount} private
+              </span>
             </div>
-            <div className="rule-row">
-              <span className="rule-label">replacement</span>
-              <code className="mono">
-                {result ? (result.replacement.length > 0 ? result.replacement : '(empty)') : '…'}
-              </code>
-            </div>
-            <div className="rule-row">
-              <span className="rule-label">flags</span>
-              <code className="mono">{result && result.flags ? result.flags : 'none'}</code>
-            </div>
-          </div>
-        </section>
-      ) : isOwner ? (
-        <section className="card">
-          <h2>Evaluate</h2>
-          <p className="muted">
-            One run, as the creator. The leader proposes a rule from the {cases.length - privateCount}{' '}
-            public examples; validators replay it over all {cases.length} examples, private ones
-            included, and refuse anything unsafe.
-          </p>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => void onEvaluate()}
-            disabled={busy || !IS_REGISTRY_CONFIGURED}
-          >
-            {busy ? 'Evaluating… this can take a minute' : 'Evaluate this spec'}
-          </button>
-        </section>
-      ) : (
-        <section className="card">
-          <h2>Pending</h2>
-          <p className="muted">
-            Only the creator ({shortAddress(spec.creator)}) can evaluate this spec. Until then there
-            is no rule to apply.
-          </p>
-        </section>
-      )}
+            <CaseList cases={cases} passed={spec.evaluated && result ? result.passed : undefined} />
+          </section>
+        </div>
 
-      <section className="card">
-        <h2>Examples</h2>
-        <CaseList cases={cases} passed={spec.evaluated && result ? result.passed : undefined} />
-      </section>
+        <aside className="detail-side">
+          {spec.evaluated ? (
+            <section className="card card-accent">
+              <h2>Accepted rule</h2>
+              <p className="muted">
+                Proposed from the public examples, then replayed by validators over every example
+                before it was stored. Verified means the rule reproduces these examples — all supplied
+                by the creator — not that the transformation is the one you wanted. Evaluation happens
+                once per spec.
+              </p>
+              <div className="rule">
+                <div className="rule-row">
+                  <span className="rule-label">pattern</span>
+                  <code className="mono">{result ? result.pattern : '…'}</code>
+                </div>
+                <div className="rule-row">
+                  <span className="rule-label">replacement</span>
+                  <code className="mono">
+                    {result ? (result.replacement.length > 0 ? result.replacement : '(empty)') : '…'}
+                  </code>
+                </div>
+                <div className="rule-row">
+                  <span className="rule-label">flags</span>
+                  <code className="mono">{result && result.flags ? result.flags : 'none'}</code>
+                </div>
+              </div>
+            </section>
+          ) : isOwner ? (
+            <section className="card">
+              <h2>Evaluate</h2>
+              <p className="muted">
+                One run, as the creator. The leader proposes a rule from the{' '}
+                {cases.length - privateCount} public examples; validators replay it over all{' '}
+                {cases.length} examples, private ones included, and refuse anything unsafe.
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => void onEvaluate()}
+                disabled={busy || !IS_REGISTRY_CONFIGURED}
+              >
+                {busy ? 'Evaluating… this can take a minute' : 'Evaluate this spec'}
+              </button>
+            </section>
+          ) : (
+            <section className="card">
+              <h2>Pending</h2>
+              <p className="muted">
+                Only the creator ({shortAddress(spec.creator)}) can evaluate this spec. Until then there
+                is no rule to apply.
+              </p>
+            </section>
+          )}
 
-      {spec.evaluated ? <TryIt specId={spec.id} /> : null}
+          {spec.evaluated ? <TryIt specId={spec.id} /> : null}
+        </aside>
+      </div>
     </div>
   )
 }

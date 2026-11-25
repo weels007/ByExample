@@ -76,7 +76,11 @@ export function Workspace({ wallet }: { wallet: Wallet }) {
         </div>
 
         {loading && summaries.length === 0 ? (
-          <p className="muted">Reading the registry…</p>
+          <div className="grid grid-3">
+            <div className="skeleton" />
+            <div className="skeleton" />
+            <div className="skeleton" />
+          </div>
         ) : summaries.length === 0 ? (
           <div className="card empty">
             <p>No specs yet. The first one is yours.</p>

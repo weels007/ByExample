@@ -17,6 +17,37 @@ type LayoutProps = {
   children: ReactNode
 }
 
+function BrandMark() {
+  return (
+    <span className="brand-mark">
+      <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">
+        <defs>
+          <linearGradient id="byexample-mark" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#b7a8ff" />
+            <stop offset="55%" stopColor="#8b7bff" />
+            <stop offset="100%" stopColor="#38e8d0" />
+          </linearGradient>
+        </defs>
+        <rect width="32" height="32" rx="9" fill="url(#byexample-mark)" />
+        <path
+          d="M8 11h8M8 16h8M8 21h6"
+          stroke="#0a0714"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M18.5 12.4 22.6 16l-4.1 3.6"
+          fill="none"
+          stroke="#0a0714"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  )
+}
+
 export function Layout({ route, wallet, children }: LayoutProps) {
   const isActive = (path: string) =>
     path === '/' ? route === '/' : route === path || route.startsWith(path + '/')
@@ -25,7 +56,7 @@ export function Layout({ route, wallet, children }: LayoutProps) {
     <div className="app">
       <header className="header">
         <a className="brand" href="#/">
-          <span className="brand-mark">::</span>
+          <BrandMark />
           <span className="brand-name">ByExample</span>
         </a>
 
@@ -45,7 +76,7 @@ export function Layout({ route, wallet, children }: LayoutProps) {
           {wallet.address ? (
             <button
               type="button"
-              className="btn btn-ghost mono"
+              className="btn btn-ghost btn-small mono"
               onClick={wallet.disconnect}
               title="Forget this wallet in the page"
             >
@@ -54,7 +85,7 @@ export function Layout({ route, wallet, children }: LayoutProps) {
           ) : (
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn btn-primary btn-small"
               onClick={() => void wallet.connect()}
               disabled={wallet.connecting}
             >
@@ -85,7 +116,9 @@ export function Layout({ route, wallet, children }: LayoutProps) {
       <main className="main">{children}</main>
 
       <footer className="footer">
-        <span>ByExample · an Intelligent Contract on GenLayer</span>
+        <span>
+          ByExample — examples in, one verified rule out. Built on GenLayer's Intelligent Contracts.
+        </span>
         <span className="mono">
           {IS_REGISTRY_CONFIGURED ? shortAddress(REGISTRY_ADDRESS) : 'registry not set'}
         </span>

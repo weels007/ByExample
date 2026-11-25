@@ -1,65 +1,98 @@
+const SAMPLES = [
+  { input: 'Hello world!!', output: 'Hello world', tone: '' },
+  { input: 'Ship it!', output: 'Ship it', tone: '' },
+  { input: 'Done!!!', output: 'Done', tone: 'is-private' },
+]
+
+const STATS = [
+  { value: '3–12', label: 'examples per spec' },
+  { value: '1', label: 'rule the model proposes' },
+  { value: '0', label: 'tolerance when it is replayed' },
+]
+
 export function Landing() {
   return (
     <div className="page">
       <section className="hero">
-        <span className="eyebrow">GenLayer · Intelligent Contract</span>
-        <h1>Teach a text rule by example.</h1>
-        <p className="lede">
-          Write three to twelve input → output pairs. ByExample asks an LLM for one regular
-          expression, and validators run that rule against <em>every</em> pair — including the
-          private ones that never left the contract — before anything is stored.
-        </p>
-        <div className="hero-actions">
-          <a className="btn btn-primary" href="#/workspace">
-            Open the workspace
-          </a>
-          <a className="btn btn-ghost" href="#/specs">
-            Browse the specs
-          </a>
+        <div className="hero-copy rise">
+          <span className="eyebrow">GenLayer · Intelligent Contract</span>
+          <h1>
+            Teach a text rule
+            <br />
+            <span className="accent">with examples.</span>
+          </h1>
+          <p className="lede">
+            Write three to twelve input → output pairs. ByExample asks an LLM for one regex, then
+            validators <em>run</em> that rule over every pair — including the private pairs that never
+            left the contract — before anything is stored.
+          </p>
+          <div className="hero-actions">
+            <a className="btn btn-primary" href="#/workspace">
+              Open the workspace
+            </a>
+            <a className="btn btn-ghost" href="#/specs">
+              Browse the specs
+            </a>
+          </div>
+          <p className="hero-note">No regex to write, no tolerance to tune: the proof is execution.</p>
         </div>
+
+        <aside className="showcase rise rise-2" aria-hidden="true">
+          <div className="showcase-head">
+            <span className="showcase-spec">spec-000001</span>
+            <span className="badge badge-ok">verified</span>
+          </div>
+          <p className="showcase-title">Drop trailing exclamation marks</p>
+
+          <div className="sample">
+            {SAMPLES.map((sample, index) => (
+              <div key={index} className={'sample-row' + (sample.tone ? ' ' + sample.tone : '')}>
+                <span>{sample.input}</span>
+                <span className="sample-arrow">→</span>
+                <span>{sample.output}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="showcase-rule">
+            <span className="sample-label">rule</span>
+            <strong>!+$</strong>
+            <span className="caret" />
+          </div>
+
+          <div className="showcase-foot">
+            <span>replayed against every pair</span>
+            <span className="mono">3 / 3 ✓</span>
+          </div>
+        </aside>
       </section>
 
       <section className="grid grid-3">
-        <article className="card">
-          <h2>Examples in</h2>
-          <p>
-            A spec is a title, a description and 3–12 examples. Mark some of them private: private
-            examples are never put in the prompt, so the model cannot fit to them.
-          </p>
-        </article>
-        <article className="card">
-          <h2>One rule out</h2>
-          <p>
-            The model answers with a pattern, a replacement and flags. Nothing is compared answer
-            to answer: the leader's rule is the only artifact, and it has to run.
-          </p>
-        </article>
-        <article className="card">
-          <h2>Verified by execution</h2>
-          <p>
-            Validators replay the rule over the whole set, public and private. Any mismatch, any
-            unsafe pattern, and the transaction reverts with nothing stored.
-          </p>
-        </article>
+        {STATS.map((stat) => (
+          <article key={stat.label} className="stat">
+            <span className="stat-value">{stat.value}</span>
+            <span className="stat-label">{stat.label}</span>
+          </article>
+        ))}
       </section>
 
       <section className="split">
-        <div className="card">
+        <article className="card">
           <h2>Writing the regex yourself</h2>
           <ul className="list">
-            <li>You guess the edge cases, then find out in production.</li>
-            <li>Nobody can check the rule against data they were not given.</li>
+            <li>You guess the edge cases, then meet them in production.</li>
+            <li>Nobody can check a rule against data they were never given.</li>
             <li>The rule lives in your head, not in a public record.</li>
           </ul>
-        </div>
-        <div className="card card-accent">
+        </article>
+        <article className="card card-accent">
           <h2>Showing three examples</h2>
           <ul className="list">
             <li>The examples are the specification, and they are the test.</li>
             <li>Private examples prove the rule generalises without leaking.</li>
-            <li>The accepted rule is stored, replayable and free to call.</li>
+            <li>The accepted rule is stored, replayable, and free to call.</li>
           </ul>
-        </div>
+        </article>
       </section>
 
       <section className="card">
@@ -69,7 +102,7 @@ export function Landing() {
             <span className="step-number">1</span>
             <div>
               <h3>Teach</h3>
-              <p>Publish a spec with your examples and mark the ones that stay private.</p>
+              <p>Publish a spec with your examples, and mark the ones that stay private.</p>
             </div>
           </li>
           <li>
@@ -77,8 +110,8 @@ export function Landing() {
             <div>
               <h3>Evaluate</h3>
               <p>
-                The creator runs evaluation once. Leader proposes, validators execute, consensus
-                decides.
+                The creator runs evaluation once. The leader proposes a rule, validators execute it, and
+                consensus decides.
               </p>
             </div>
           </li>
@@ -93,6 +126,27 @@ export function Landing() {
             </div>
           </li>
         </ol>
+      </section>
+
+      <section className="card card-accent">
+        <div className="section-head">
+          <h2>Ready to teach one?</h2>
+          <a className="link mono" href="#/how-it-works">
+            how consensus works →
+          </a>
+        </div>
+        <p className="muted">
+          A spec takes a title, a description and a handful of pairs. The rest is one transaction and a
+          rule that outlives it.
+        </p>
+        <div className="hero-actions">
+          <a className="btn btn-primary" href="#/workspace">
+            New spec
+          </a>
+          <a className="btn btn-ghost" href="#/specs">
+            See what others taught
+          </a>
+        </div>
       </section>
     </div>
   )
