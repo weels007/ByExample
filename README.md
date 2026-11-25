@@ -219,9 +219,11 @@ workflow runs the live evaluation by default; set the repository variable
 
 ## Vercel
 
-The repository root is the Vite app: `vercel.json` builds `npm run build` into `dist`, `.nvmrc`
-pins Node 20, and there are no environment variables. Import the repository, keep the detected
-Vite settings, deploy.
+The repository root is the Vite app: `vercel.json` runs `npm install` and `npm run build` into `dist`,
+`package.json` pins Node `>=20 <23` for Vercel (`.nvmrc` covers local and CI, which Vercel ignores),
+and there are no environment variables. Import the repository, keep the detected Vite settings,
+deploy. There is no `package-lock.json` in the repository, so `npm install` resolves the dependencies
+fresh on every build — that is deliberate, and the whole build is what CI runs on each push.
 
 ---
 
