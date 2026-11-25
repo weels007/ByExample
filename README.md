@@ -145,7 +145,8 @@ React 18 + TypeScript + Vite, no environment variables, hash routes so the stati
 Vercel without rewrites. A single stylesheet carries the whole look: layered gradients and a faint
 grid behind glass cards, an inline SVG brand mark, a gradient "examples → rule" showcase on the
 landing page, hover lifts, entrance and skeleton animations, all with a `prefers-reduced-motion`
-opt-out and no animation library.
+opt-out and no animation library. The tab icon and the Apple touch icon live in `public/`, so the
+build serves them from `/favicon.png` and `/apple-touch-icon.png`:
 
 - `#/` — what ByExample is, why examples beat regex, the three steps.
 - `#/workspace` — registry summary, latest specs, the "New spec" composer.

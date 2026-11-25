@@ -1,0 +1,2 @@
+Vite copies this folder into the build as it is, so the icons generated here
+are served from /favicon.png and /apple-touch-icon.png in production.
